@@ -81,34 +81,90 @@ func calculateRatios(factors []int, x, y *[]int) {
 		yStatic  = append(yStatic, currentY) 
 		*x  	 = append(*x, currentX)
 		*y		 = append(*y, currentY)
-
-		fmt.Printf(strconv.Itoa(i))
 	}	
 }
 
+func findMaxLength(max *int, length int, slice []int) {
+	var current int 
+	for i := 0; i < length; i++ {
+		current = len(strconv.Itoa(slice[i]))
+		if (*max < current || *max == 0) {
+			*max = current
+		}
+	}
+}
+
+func logHeader(max, len int) {
+	var i, j int
+	headerString := "Table:      | A"
+
+	for i = 0; i < max; i++ {
+		headerString += " "
+	}
+
+	headerString += "| B"
+
+	for i = 0; i < max; i++ {
+		headerString += " "
+	}
+
+	for i = 0; i < len - 2; i++ {
+		if (i != len - 4) {
+			headerString += "|"
+			for j = 0; j < max + 2; j++ {
+				headerString += " "
+			}
+		} else {
+			headerString += "| GCD"
+			for j = 0; j < max - 2; j++ {
+				headerString += " "
+			}
+		}
+	}
+
+	fmt.Printf(headerString)
+}
+
+func logRow(label string, max, length int, slice []int) {
+	var i, j, difference int
+	additional := ""
+	row 	   := "\n" + label
+
+	for i = 0; i < length; i++ {
+		row += " | "
+		currentElement   := strconv.Itoa(slice[i])
+		difference        = max - len(currentElement)
+
+		for j = 0; j < difference; j++ {
+			additional += " "
+		}
+
+		row += currentElement + additional
+		additional = ""
+	}
+
+	fmt.Printf(row)
+}
+
 func logData(remainders, factors, x, y []int) {
+
 	// * Find the longest num
-	var maxLength int
-	
-	fmt.Printf("\n")
-	for _, value := range *remainders {
-		fmt.Printf(strconv.Itoa(value) + " ")
-	}
+	var maxLength, sliceLength int
+	maxLength   = 0
+ 	sliceLength = len(remainders)
+
+	findMaxLength(&maxLength, sliceLength, remainders)
+	findMaxLength(&maxLength, sliceLength, factors)
+	findMaxLength(&maxLength, sliceLength, x)
+	findMaxLength(&maxLength, sliceLength, y)
 
 	fmt.Printf("\n")
-	for _, value := range *factors {
-		fmt.Printf(strconv.Itoa(value) + " ")
-	}
-
-	fmt.Printf("\n")
-	for _, value := range *x {
-		fmt.Printf(strconv.Itoa(value) + " ")
-	}
-
-	fmt.Printf("\n")
-	for _, value := range *y {
-		fmt.Printf(strconv.Itoa(value) + " ")
-	}
+	logHeader(maxLength, sliceLength)
+	logRow("Remainders:", maxLength, sliceLength, remainders)
+	logRow("Factors   :", maxLength, sliceLength, factors)
+	logRow("X         :", maxLength, sliceLength, x)
+	logRow("Y         :", maxLength, sliceLength, y)
+	fmt.Printf("\n\n")
 }
 
 func main() {
@@ -125,12 +181,12 @@ func main() {
 
 	// * Step 2. Find last remainder (Euclidean Algorithm) 
 	euclideanAlgorithm(&remainders, &factors)
-
+	remainders[0] = number1
+	remainders[1] = number2
 
 	// * Step 3. Calculate ratios
 	calculateRatios(factors, &x, &y)
 
 	// * Step 4. Log the result 
 	logData(remainders, factors, x, y)
-
 }
