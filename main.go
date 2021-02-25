@@ -7,19 +7,24 @@ import (
 )
 
 
-func settingUpSlices(number1 , number2 *int,
-	remainders, factors, x, y *[]int) (err bool, msg string) {
-	err    = false
-	msg    = ""
+func settingUpSlices(
+	number1, 
+	number2 *int, 
+	remainders, 
+	factors, 
+	x, y *[]int) (err bool, msg string) {
+	// * Reading data
+	err = false
+	msg = ""
 	fmt.Printf("Enter first number: ")
 	fmt.Scanf("%d", number1)
 	fmt.Printf("Enter second number: ")
 	fmt.Scanf("%d", number2)
 
-	// * Checking data
+	// * Validate data
 	if (*number1 == 0 || *number2 == 0) {
 		err    = true
-		msg	   = "Invalid data: input need to be non-zero"
+		msg	   = "Invalid data: input need to be non-zero\n"
 	}
 
 	// * Setting up X vector
@@ -60,7 +65,7 @@ func settingUpSlices(number1 , number2 *int,
 func euclideanAlgorithm(remainders, factors *[]int) {
 	var processRemainder, processFactor int
 	remaindersStatic := *remainders
-	for i := 0;; i++ {
+	for i := 0 ;; i++ {
 		processFactor     = int(math.Floor(float64(remaindersStatic[i]) / float64(remaindersStatic[i + 1])))
 		processRemainder  = remaindersStatic[i] - remaindersStatic[i + 1] * processFactor
 		*remainders 	  = append(*remainders, processRemainder)
@@ -84,8 +89,9 @@ func calculateRatios(factors []int, x, y *[]int) {
 	}	
 }
 
-func findMaxLength(max *int, length int, slice []int) {
+func findMaxLength(max *int, slice []int) {
 	var current int 
+	length := len(slice)
 	for i := 0; i < length; i++ {
 		current = len(strconv.Itoa(slice[i]))
 		if (*max < current || *max == 0) {
@@ -125,10 +131,11 @@ func logHeader(max, len int) {
 	fmt.Printf(headerString)
 }
 
-func logRow(label string, max, length int, slice []int) {
+func logRow(label string, max int, slice []int) {
 	var i, j, difference int
 	additional := ""
 	row 	   := "\n" + label
+	length 	   := len(slice)
 
 	for i = 0; i < length; i++ {
 		row += " | "
@@ -147,29 +154,27 @@ func logRow(label string, max, length int, slice []int) {
 }
 
 func logData(remainders, factors, x, y []int) {
-
 	// * Find the longest num
-	var maxLength, sliceLength int
+	var maxLength int
 	maxLength   = 0
- 	sliceLength = len(remainders)
 
-	findMaxLength(&maxLength, sliceLength, remainders)
-	findMaxLength(&maxLength, sliceLength, factors)
-	findMaxLength(&maxLength, sliceLength, x)
-	findMaxLength(&maxLength, sliceLength, y)
+	findMaxLength(&maxLength, remainders)
+	findMaxLength(&maxLength, factors)
+	findMaxLength(&maxLength, x)
+	findMaxLength(&maxLength, y)
 
 	fmt.Printf("\n")
-	logHeader(maxLength, sliceLength)
-	logRow("Remainders:", maxLength, sliceLength, remainders)
-	logRow("Factors   :", maxLength, sliceLength, factors)
-	logRow("X         :", maxLength, sliceLength, x)
-	logRow("Y         :", maxLength, sliceLength, y)
+	logHeader(maxLength, len(remainders))
+	logRow("Remainders:", maxLength, remainders)
+	logRow("Factors   :", maxLength, factors)
+	logRow("X         :", maxLength, x)
+	logRow("Y         :", maxLength, y)
 	fmt.Printf("\n\n")
 }
 
 func main() {
 	var number1, number2 int
-	var remainders, factors, x, y  []int
+	var remainders, factors, x, y []int
 
 	// * Step 1. Initialize data
 	err, msg := settingUpSlices(&number1, &number2, &remainders, &factors, &x, &y);
@@ -177,6 +182,7 @@ func main() {
 	// ! Validation for Step 1.
 	if (err) {
 		fmt.Printf(msg)
+		return;
 	}
 
 	// * Step 2. Find last remainder (Euclidean Algorithm) 
